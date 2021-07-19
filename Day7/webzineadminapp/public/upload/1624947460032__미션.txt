@@ -1,0 +1,218 @@
+미션1)회원정보 관리 기능 구현 - MVC 패턴
+
+webzine
+
+
+**모델 클래스: models\member.js
+ㄴ모델 형식은 ERD 테이블 참조
+ㄴmodels\index.js 에 속성으로 노출하기
+
+**-MVC 라우팅파일 : routes\member.js
+-회원목록 페이지: views\member\list.ejs 
+-신규회원 등록 페이지:views\member\regist.ejs 
+-기존회원 수정 페이지:views\member\modify.ejs 
+-회원삭제 :  기능구현
+
+** 입력데이터 : 
+메일주소,암호,닉네임,가입유형(콤보박스-EntryType직접가입:0,SNS가입:1), 
+실명,전화번호,PHOTO프로파일 (첨부파일-저장경로)
+회원유형:(UserType: 일반사용자:0, 관리자:1)
+사용자상태코드: UserState:  사용중지:0 / 사용중:1
+
+** 라우팅 메소드 및 데이터 처리는 비동기 방식으로
+( async / await 방식 사용)
+
+** 페이지간 이동에 끊김없이 구현
+** 폼 입력 유효성 검사 진행(JQuery 사용)
+-파일업로드 구현(강사와함께)
+-레이아웃 선택 적용하기 (강사와 함께)
+-HASH 암호화 알고리즘 적용 암호문자열 저장(강사와 함께) :  npm i bcryptjs
+
+$2a$12$QUpdieeHe7bHfiIQu9kBiuEEsxaHORE2YRfFoSgz9PPY5tPXo.Ana
+
+
+미션2) 회원정보관리 - 프론트엔드/백엔드 패턴
+-회원정보관리 RESTful API 라우팅 파일 구현: 
+ㄴroutes\memberAPI.js
+ㄴ목록/등록/수정/삭제/단일건조회(와일드카드사용) API 구현
+ㄴ로그인 구현
+
+-정적웹페이지(~.html 페이지구현/jquery ajax 구현)
+-인증 및 권한 적용
+-JWT 적용 인증된 사용자만 해당 API호출가능하게 구현
+
+
+
+==========================================================================
+주요 개념 잡기
+==========================================================================
+
+0)웹개발 방식의 이해
+
+Case1) MVC 패턴 기반 백엔드에서 모든일을 다하는경우(View= ~.ejs를 통해 프론트엔드가 해야할 html조작도 백엔드해서 브라우저에 전달)
+
+Model : 데이터 조작(ORM=DATA Model) 
+View   :  화면(UI)제공하고 ViewEngine기술( EJS OR PUG)을 이용해 HTML을 서버측에서 변조해서 브라우저에게 전달/브라우저는 해석만해서 사용자에게 보여주기만한다.
+Controller : Route 와 동일하며 사용자가 URL(주소)를 호출하면 해당 호출주소에 맞는 화면이나 데이터를 전송하고 제어한다.
+
+사용자가 URL(Unified Resource Locator) or URI(Unified Resource Indicator) 을 통해 어플리케이션의 리소스를 호출하면
+Controller(Route File내 Routing메소드) 가 가장먼저 호출됩니다.ㅇ
+
+http://www.naver.com/member/list
+member라는 컨트롤러(라우팅)파일을 찾고 해당 라우팅 파일내 list라는 액션(라우팅)메소드를 호출한다.
+
+
+list라우팅 메소드는 데이터가 필요하면 Model 영역에서 데이터모델을 이용해 데이터를 조회하거나 등록/수정/삭제 하고
+데이터만 브라우저에 제공하고자하면 res.json(데이터) 를 호출해 바로 브라우저에 JSON데이터를 전송하거나
+특정 HTML 화면(View)만 제공하고자하면 res.render(뷰파일명) view파일내  정적html만 제공하거나
+특정 HTML 화면(VIEW)에 데이터까지 전달해서 VIEW ENGING문법으로 동적으로  HTML을 변조해서 브라우저에 최종 HTML결과물을 전달한다.
+
+
+
+CASE2) 프론트엔드 영역(역할)과 백엔드 영역(역할)을 나눠서 개발하는 방식
+
+ㅁ프론트엔드의 역할:
+- 백엔드에 정적 웹페이지를 제공 요청한다.
+- 백엔드에 순수 JSON데이터를 제공 요청한다.
+- 제공된 JSON데이터 기반 제공된  정적 웹페이지  HTML소스를 동적으로 브라우저 측에서 HTML 변조(조작)한다.
+
+
+ㅁ백엔드의 역할:
+- 프론트에 제공할  정적 웹페이지를 제공한다.
+ㄴMVC 패턴으로 제공(naver.com/member/regist ) 하거나 정적페이지를 기본 제공하거나( naver.com/member/regist.html )
+ㄴREST API(OPEN API) 를 통해 데이터 처리 및 데이터 정보를 제공한다.
+ㄴREST API 라우팅 규칙 정의 및 관련 라우팅 메소드 기능 구현 제공 
+ㄴDATABASE 관리
+
+
+
+
+
+1)호출 URL 주소와 라우팅 메소드의 관계
+-라우팅이란 사용자가 URL을 통해 해당 애플리케이션에 리소스를 요청하는 행위 또는 리소스를 찾아가능 과정
+-라우팅의 첫출발은 사용자가 URL을 호출(어플리케이션의 특정 리소스를 호출)하는 것입니다.
+-URL호출하는 방식을 결정하는 측은 사용자(웹브라우저/URL)입니다.
+
+ㅁURL호출방식 = method에는 아래 대표적 4가지가 있어용.
+
+get방식으로 서버 주소 호출하기 =>  url주소로 최초 호출하는 모든 경우는 모두 get방식입니다. 또는 form태그내  또는 ajax 호출시 type이 명시적으로 Get으로 지정된경우
+<form method="GET" action="/member/regist">
+</form>
+
+$.ajax({
+url:"naver.com/api/product/1"
+})
+
+$.ajax({
+url:"naver.com/api/product/1"
+type:"GET/POST/PUT..."
+})
+ 
+post 방식으로 서버주소 호출하기  : 신규데이터를 등록하거나 신규가 아니더라도 브라우저에서 데이터를 서버로 전송할떄 대표적으로 주로 많이 사용.
+put 방식으로 서버주소 호출하기 : 기존 데이터를 수정목적으로 브라우에서 데이터를 서버로 전송할떄 사용: post로 대체 사용가능
+delete 방식으로 서버주소 호출하기 : 기존 데이터르 삭제목적으로 서버 기능을 호출하는경우/get으로 대체 사용가능
+
+
+** 클라이언트에서(브라우저에서) URL주소(웹페이지/데이터 호출 OPEN API)를 호출하는 방식(METHOD)에 따라
+해당 호출 세부 라우팅주소와 호출방식이 일치하는 라우팅 메소드가 호출된다.
+
+
+Q1) 브라우저에서 하기 주소를 호출했어요.. 그럼 서버에서 어떤(어떻게) 노드 라우팅 메소드가 호출될까요??
+http://naver.com/member/list
+
+member.js  라우터 파일내에 
+list라는 라우팅 주소를  get방식으로 제공하는 라우팅메소드를 호출한다.
+app.js내 memberRouter의 기본주소가 naver.com/member로 설정되어 있어요.
+
+router.get('/list',function(req,res){
+});
+
+
+Q2) HTML 하기 소스에서 폼구문내 사용자가 입력한 데이터를  지정된 주소를 전송하고 싶습니다.
+<form method="post" action="/member/regist">
+이름: <Inpu type="text" value="강창훈">
+<input type="submit">
+</form> 
+
+
+$.ajax({
+url: "http://naver.com/member/regist",
+type:"post"
+})
+
+$.ajax({
+url: "http://naver.com/member/regist",
+type:"put"
+})
+
+member.js 라우팅 파일내에
+regist라는 라우팅 메소드를 찾는데 post로 정의된 라우팅 메소드가 실행된다.
+
+router.post('/regist',function(req,res){
+
+});
+
+router.put('/regist',function(req,res){
+
+});
+
+
+
+
+
+2) URL 주소 기반 데이터 전달 방식의 차이 
+브라우저에서 데이터를 서버로 전달하는 방식에는 get/post/put/delete/patch... 대부분이 모두가능하지만
+URL주소(GET방식)에 문자열로 데이터를 전송하는 방식은 아래와 같습니다. 
+
+
+-QueryString  방식  : http://naver.com/product?pid=1&pname=computer&stock=1
+ㄴNODE에서 해당값 추출하기 : const productId = req.query.pid;
+
+
+-Parameter 방식     : http://naver.com/product/1 
+ㄴ라우팅 메소드의 주소란에 정의된 와일드 카드 :pid 변수명을 정의하고 해당 변수명을 req.params.변수명으로 추출한다.
+router.get("/product/:pid",function(req,res){
+})
+ㄴNODE에서 해당값 추출하기 : const productId = req.params.pid
+
+
+
+
+
+3)동기방식과 비동기 방식의 차이
+
+
+ㅁ동기방식 코딩예시
+
+router.get("",function(req,res){
+
+Member.create().then(처리결과는 요기서 처리).catch();
+ㄴ해당 동기 처리 기능이 완료되어야 다음단계 코드가 실행됨...
+ㄴ실행결과를 바로 반환받는 코드사용 불가 
+
+});
+
+
+
+ㅁ비동기 방식 코딩 예시
+router.get("",async(req,res)=>{
+
+await Member.create();
+
+const result = await Member.update();
+
+await Member.destroy();
+
+ㄴ반드시 라우팅메소드의 반환함수를 async화살표 함수로 변경하고
+ㄴDB처리 부분에 await으로 시작해서 데이터 처리가 이루어져야하며
+ㄴ실행결과를 바로 반환받을수도 있다. 
+ㄴ여려개의 DB 명령을 연속으로 동시에 실행할수 있다.
+
+
+});
+
+
+
+
+
+

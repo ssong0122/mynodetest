@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>게시글 목록 페이지</title>
+
+        <style>
+            table{
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            td{
+                border:1px solidd gray;
+            }
+        </style>
+    </head>
+
+
+    <body>
+        <a href="./regist.html">글작성</a>
+        <table id="list">
+            <thead>
+                <tr>
+                    <th>글번호</th>
+                    <th>글제목</th>
+                    <th>글내용</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            </tbody>
+        </table>
+
+        <!--Jquery 라이브러리 참조 -->
+        <script src="../js/jquery-3.6.0.min.js"></script>
+
+        <!--개발자 정의 클라이언트 스크립트 코드 -->
+        <script>
+
+            //html문서가 브라우저에 모두 로링(렌더링)이 완료되면 발생하는 이벤트
+            $(document).ready(function(){
+
+                //HTML문서가 모두 브라우저에 로딩되면
+                //AJAX로 백엔드 서버에서 전체 게시글 목록 데이터를 가져온다.
+
+                //$.get("백엔드 호출주소",호출결과처리함수);
+
+                // $.get('http://localhost:3000/api/articles',function(response){
+
+                //     console.log("서버에서 전달된 데이터목록:",response.data);
+
+                //     if(response.code == "200" || response.msg == "Ok"){
+                        
+                //             $.each(response.data,function(i,item){
+
+                //             //console.log(i+ "번쨰에서 꺼내온 단일데이터:",item);
+                //             console.log(`${i}번쨰에서 꺼내온 단일데이터:`,item);
+
+                //             var rowTag =`<tr>
+                //                         <td>${item.id}</td>
+                //                         <td><a href="./modify.html?id=${item.id}">${item.title}</a></td>
+                //                         <td>${item.contents}</td>
+                //                         </tr>`;
+
+                //             //table태그요소를 찾아서 table태그에 rowtag를 추가한다.
+                //             $("#list").append(rowTag);
+
+                //         });
+                //     }else{
+                //         console.error(response.msg);
+                //         alert("호출 에러가 발생했습니다.에러내용은:"+ response.msg);
+                //     }
+           
+                // });
+
+
+                //JWT 토큰 기반 백엔드 API 호출하기 
+
+                //사용자 브라우저 로컬스토리지 공간에서 해당키값이 토큰값 조회하기 
+                var storageToken =  localStorage.getItem('msofttoken');
+                console.log("저장된 JWT토큰값:",storageToken);
+
+                if(storageToken == null){
+                    alert("로그인을 실시해주세요.");
+                    location.href="/forms/login.html";
+                }
+
+                $.ajax({
+                    type:"GET",
+                    url:"http://localhost:3000/api/articles",
+                    headers:{
+                        'Authorization':'Bearer '+storageToken
+                    },
+                    dataType:'json',
+                    success:function(result){
+                        console.log("호출결과:",result);
+
+                        $.each(result.data,function(i,item){
+                            var rowTag =`<tr>
+                                        <td>${item.id}</td>
+                                        <td><a href="./modify.html?id=${item.id}">${item.title}</a></td>
+                                        <td>${item.contents}</td>
+                                        </tr>`;
+                            $("#list").append(rowTag);
+                        });
+                    },
+                    error:function(xhr,status,error){
+                        console.error(error);
+                    }
+                });
+
+
+
+
+
+
+
+            });
+
+
+
+        </script>
+
+    </body>
+</html>

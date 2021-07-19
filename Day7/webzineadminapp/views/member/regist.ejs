@@ -1,0 +1,155 @@
+<!--우측 콘텐츠 헤더영역 -->
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-10">
+        <h2>회원등록</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a href="/Home/Index">Home</a>
+            </li>
+            <li>
+                <a>회원정보관리</a>
+            </li>
+            <li class="active">
+                <strong>등록</strong>
+            </li>
+        </ol>
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+
+<!--우측 콘텐츠 영역 -->
+<div class="wrapper wrapper-content">
+<form method="post"  action="/member/regist" enctype="multipart/form-data" onsubmit="return fnSave();">
+    <div class="ibox-content m-b-sm border-bottom">
+
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="control-label">메일주소</label>
+                    <input type="text" id="email"  name="email" class="form-control" value="">
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="control-label">암호</label>
+                    <input type="password" id="userpwd" name="userpwd" value="" class="form-control">
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="control-label">가입유형</label>
+                    
+                    <select id="entrytype" name="entrytype" class="form-control">
+                       <option value="">선택</option>
+                       <option value="0">직접입력</option>
+                       <option value="1">SNS가입</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="control-label">닉네임</label>
+                    <input type="text" id="nickname"  name="nickname" class="form-control" value="">
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="control-label">실명</label>
+                    <input type="text" id="username" name="username" value="" class="form-control">
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="control-label">전화번호</label>
+                    
+                    <input type="text" id="telephone" name="telephone" value="" class="form-control">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="control-label">프로파일이미지</label>
+                    <input type="file" id="photo" name="photo" class="form-control" value="">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="control-label">회원유형</label>
+                    <select id="usertype" name="usertype" class="form-control">
+                        <option value="0">일반사용자</option>
+                        <option value="1">관리자</option>
+                     </select>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="control-label">사용상태</label>
+                    <select id="userstate" name="userstate" class="form-control">
+                        <option value="1">사용중</option>
+                        <option value="0">탈퇴완료</option>
+                     </select>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="control-label">작성자</label>
+                
+                </div>
+            </div>
+        </div>
+
+ 
+        <div class="text-center">
+            <input type="submit" class="btn btn-primary" value="저장"/>
+            <a href="/member/list" class="btn btn-info">목록</a>
+        </div>
+
+    </div>
+</form>
+</div>
+
+
+<script>
+
+$("#email").focus();
+
+//게시글 정보 유효성 검사 함수
+function fnSave(){
+
+if($("#email").val() == ""){
+    alert("메일주소를 입력해주세요.");
+    $("#email").focus();
+    return false;
+}
+
+if($("#userpwd").val() == ""){
+    alert("암호를 입력해주세요.");
+    $("#userpwd").focus();
+    return false;
+}
+
+if($("#entrytype").val() == ""){
+    alert("가입유형을 선택해주세요.");
+    $("#entrytype").focus();
+    return false;
+}
+
+return true;
+}
+</script>
+
